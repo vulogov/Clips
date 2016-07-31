@@ -32,19 +32,9 @@ cdef extern from "clips.h":
     cdef int SIMPLICITY_STRATEGY
     cdef int RANDOM_STRATEGY
 
-
-
-
-
-#FLOAT=FLOAT
-#INTEGER=INTEGER
-#SYMBOL=SYMBOL
-#STRING=STRING
-#MULTIFIELD=MULTIFIELD
-#EXTERNAL_ADDRESS=EXTERNAL_ADDRESS
-#FACT_ADDRESS=FACT_ADDRESS
-#INSTANCE_NAME=INSTANCE_NAME
-
+##
+## STRATEGY modes
+##
 
 _DEPTH_STRATEGY=DEPTH_STRATEGY
 _BREADTH_STRATEGY=BREADTH_STRATEGY
@@ -139,17 +129,31 @@ cdef clp2py(DATA_OBJECT data):
         return None
 
 
-cdef class SHELL:
-    cdef void* env
+cdef class BASEENV:
+    cdef void * env
     cdef object ready
-    def __cinit__(self):
-        self.ready=False
+
+    def Cinit(self):
+        self.ready = False
         self.env = NULL
-    cdef create(self, void* env):
+    def isReady(self):
+        return self.ready
+    cdef Create(self, void * env):
         if env != NULL:
             self.env = env
             self.ready = True
 
+
+cdef class OBJECT(BASEENV):
+    def __cinit__(self):
+        BASEENV.Cinit(self)
+
+
+cdef class SHELL(BASEENV):
+    def __cinit__(self):
+        BASEENV.Cinit(self)
+    cdef create(self, void* env):
+        BASEENV.Create(self, <void*>env)
     def STRATEGY(self, stra=None):
         if stra != None:
             SetStrategy(<void*>self.env, stra)
@@ -175,14 +179,13 @@ cdef class SHELL:
         return Run(<void*>self.env, limit)
 
 
-cdef class FACT:
-    cdef void* env
+cdef class FACT(BASEENV):
     cdef void* fact
-    cdef object ready
+
     def __cinit__(self):
-        self.ready = False
+        BASEENV.Cinit(self)
     cdef create(self, void* env, void* fact):
-        self.env = env
+        BASEENV.Create(self, <void*>env)
         self.fact = fact
         if self.env != NULL and self.fact != NULL:
             self.ready = True
@@ -227,14 +230,13 @@ cdef class FACT:
         if self.ready == True:
             DecrementFactCount(self.env, self.fact)
 
-cdef class MODULE:
+cdef class MODULE(BASEENV):
     cdef void* module
-    cdef void* env
-    cdef object ready
+
     def __cinit__(self):
-        self.ready=False
+        BASEENV.Cinit(self)
     cdef create(self, void* env, void*  module):
-        self.env = env
+        BASEENV.Create(self, <void *> env)
         self.module = module
         if self.module != NULL or self.env != NULL:
             self.ready = True
@@ -260,18 +262,13 @@ cdef class MODULE:
             return ""
 
 
-cdef class FACTS:
-    cdef void* env
-    cdef object ready
+cdef class FACTS(BASEENV):
     cdef object transactions
     def __cinit__(self):
-        self.ready=False
-        self.env = NULL
+        BASEENV.Cinit(self)
         self.transactions = {}
     cdef create(self, void* env):
-        if env != NULL:
-            self.env = env
-            self.ready = True
+        BASEENV.Create(self, <void*>env)
     def FACTS(self):
         f = GetNextFact(<void*>self.env, NULL)
         if f == NULL:
@@ -311,16 +308,12 @@ cdef class FACTS:
         facts = '\n'.join(self.transactions[trid])
         return self.ASSERTS(facts)
 
-cdef class ENV:
-    cdef void* env
-    cdef object ready
+cdef class ENV(BASEENV):
     def __cinit__(self):
-        self.ready = False
+        BASEENV.Cinit(self)
         self.env = <void*>CreateEnvironment()
         if self.env != NULL:
             self.ready = True
-    def isReady(self):
-        return self.ready
     def currentModule(self):
         m = MODULE()
         m.create(<void*>self.env, <void*>GetCurrentModule(<void*>self.env))

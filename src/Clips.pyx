@@ -32,6 +32,12 @@ cdef extern from "clips.h":
     cdef int SIMPLICITY_STRATEGY
     cdef int RANDOM_STRATEGY
 
+cdef extern from "commline.h":
+    int RouteCommand(void* env, char* cmd, int printResult)
+    void FlushPPBuffer(void * theEnv)
+
+
+
 ##
 ## STRATEGY modes
 ##
@@ -51,6 +57,9 @@ class EvalError(RuntimeError):
     pass
 class ShellError(RuntimeError):
     pass
+class FactError(RuntimeError):
+    pass
+
 
 
 
@@ -75,6 +84,7 @@ cdef extern from "clips.h":
     int   SetStrategy(void* env, int value)
     int   GetStrategy(void* env)
 
+
     ## Work with modules
     void *GetCurrentModule(void* env)
     void *SetCurrentModule(void* env, void* defmodulePtr)
@@ -83,7 +93,8 @@ cdef extern from "clips.h":
     char *GetDefmodulePPForm(void* env, void* defmodulePtr)
     ## Work with Facts
     void *AssertString(void* env, char* fact)
-    int   LoadFactsFromString(void* env, char* nputString,int maximumPosition)
+    void * AssertString(void * env, char * fact)
+    int  LoadFactsFromString(void* env, char* nputString,int maximumPosition)
     void PPFact(void* factPtr,char* logicalName,int ignoreDefaultFlag)
     void  GetFactPPForm(void* env, char* buffer,int bufferLength,void* factPtr)
     void IncrementFactCount(void* env, void* fact)
@@ -94,8 +105,10 @@ cdef extern from "clips.h":
     int GetFactListChanged(void* env)
     void SetFactListChanged(void* env, int changedFlag)
     void FactSlotNames(void* env, void* factPtr, DATA_OBJECT* theValue)
+    int GetFactSlot(void* env, void* factPtr, char* slotName, DATA_OBJECT* theValue)
     ## Work with evaluations
     int Eval(void* env, char* expressionString, DATA_OBJECT* result)
+    int   ActivateRouter(void* env, char *routerName)
 
 
 
@@ -137,16 +150,13 @@ cdef class BASEENV:
         self.ready = False
         self.env = NULL
     def isReady(self):
+        if self.env == NULL:
+            return False
         return self.ready
     cdef Create(self, void * env):
         if env != NULL:
             self.env = env
             self.ready = True
-
-
-cdef class OBJECT(BASEENV):
-    def __cinit__(self):
-        BASEENV.Cinit(self)
 
 
 cdef class SHELL(BASEENV):
@@ -155,6 +165,9 @@ cdef class SHELL(BASEENV):
     cdef create(self, void* env):
         BASEENV.Create(self, <void*>env)
     def STRATEGY(self, stra=None):
+
+        if self.isReady() != True:
+            raise EvalError,"SHELL() is not ready"
         if stra != None:
             SetStrategy(<void*>self.env, stra)
             return stra
@@ -164,7 +177,7 @@ cdef class SHELL(BASEENV):
     def EVAL(self, cmd):
         cdef DATA_OBJECT res
 
-        if self.ready != True:
+        if self.isReady() != True:
             raise EvalError,"SHELL() is not ready"
 
         try:
@@ -174,9 +187,16 @@ cdef class SHELL(BASEENV):
             raise EvalError,"Error in: %s"%cmd
         raise EvalError,"Error in: %s"%cmd
     def RUN(self, limit=-1):
-        if self.ready != True:
+        if self.isReady() != True:
             raise ShellError(),"SHELL() is not ready"
         return Run(<void*>self.env, limit)
+    def EXEC(self, cmd):
+        if self.isReady() != True:
+            raise EvalError, "SHELL() is not ready"
+        if RouteCommand(<void*>self.env, cmd, 1) != 1:
+            return False
+        FlushPPBuffer(<void*>self.env)
+        return True
 
 
 cdef class FACT(BASEENV):
@@ -188,20 +208,32 @@ cdef class FACT(BASEENV):
         BASEENV.Create(self, <void*>env)
         self.fact = fact
         if self.env != NULL and self.fact != NULL:
-            self.ready = True
+            #if self.isReady() != True:
+            #    raise FactError, "FACT() is not ready"
+            print "Bla #3"
             IncrementFactCount(self.env, self.fact)
+        else:
+            raise FactError, "FACT() not reaady in create()"
     def Print(self):
         cdef char* buf;
+
+        if self.isReady() != True:
+            raise FactError, "FACT() is not ready"
+
         buf = <char*> PyMem_Malloc(4096)
         GetFactPPForm(<void*>self.env, <char*>buf, 4096, <void*>self.fact)
         return buf
     def __repr__(self):
         return self.Print()
     def EXISTS(self):
+        if self.isReady() != True:
+            raise FactError, "FACT() is not ready"
         if FactExistp(<void*>self.env, <void*>self.fact) == 1:
             return True
         return False
     def RETRACT(self):
+        if self.isReady() != True:
+            raise FactError, "FACT() is not ready"
         if Retract(<void*>self.env, <void*>self.fact) == 1:
             DecrementFactCount(<void*>self.env, <void*>self.fact)
             return True
@@ -209,6 +241,9 @@ cdef class FACT(BASEENV):
     def KEYS(self):
         cdef DATA_OBJECT slots
         cdef void* val
+
+        if self.isReady() != True:
+            raise FactError, "FACT() is not ready"
         FactSlotNames(<void*>self.env, <void*>self.fact, &slots)
         if slots.type != MULTIFIELD:
             raise ValueError,"Expected MULTIFIELD, acquired %d"%slots.type
@@ -222,12 +257,29 @@ cdef class FACT(BASEENV):
             out.append(ValueToString(val))
         return out
     def __getitem__(self, key):
+        cdef DATA_OBJECT data
+
+        if self.isReady() != True:
+            raise FactError, "FACT() is not ready"
         keys = self.KEYS()
         if key not in keys:
             raise KeyError,key
         ix = keys.index(key)+1
+        if GetFactSlot(<void*>self.env, <void*>self.fact, key, &data) == 1:
+            return clp2py(data)
+        raise ValueError,key
+
+    def IMPLIED(self):
+        cdef DATA_OBJECT data
+
+        if self.isReady() != True:
+            raise FactError, "FACT() is not ready"
+
+        if GetFactSlot(<void*>self.env, <void*>self.fact, NULL, &data) == 1:
+            return clp2py(data)
+        return None
     def __dealloc__(self):
-        if self.ready == True:
+        if self.isReady() == True:
             DecrementFactCount(self.env, self.fact)
 
 cdef class MODULE(BASEENV):
@@ -285,6 +337,8 @@ cdef class FACTS(BASEENV):
             res.append(fact)
         return res
     def ASSERT(self, fact, trid=None):
+        if self.isReady() != True:
+            raise FactError, "FACTS() is not ready for Assert"
         if trid == None:
             f = FACT()
             f.create(<void*>self.env, <void*>AssertString(<void*>self.env, fact))
@@ -314,6 +368,7 @@ cdef class ENV(BASEENV):
         self.env = <void*>CreateEnvironment()
         if self.env != NULL:
             self.ready = True
+            ActivateRouter( < void * > self.env, "stdout")
     def currentModule(self):
         m = MODULE()
         m.create(<void*>self.env, <void*>GetCurrentModule(<void*>self.env))

@@ -27,6 +27,9 @@ f2 = fcts.ASSERT("(example (x 2) (y blue) (z 42.0 a))")
 print "ASSERT()",f2
 f3 = fcts.ASSERT("(example (x 1) (y black) (z 41.0 c))")
 print "ASSERT()",f3
+f4 = fcts.ASSERT("(hello world)")
+print "ASSERT()",f4
+print "IMPLIED()",f4.IMPLIED()
 print "Testing ASSERTS()",fcts.ASSERTS("(example (x 4) (y pink) (z 40.0 d)) (example (x 5) (y yellow) (z 400.0 v))")
 print "Testing ENV().IS_CHANGED()",e.IS_CHANGED()
 print "Testing Facts"
@@ -34,6 +37,9 @@ print "Testing Facts"
 print "Testing FACT().Print()", repr(f)
 print "Testing FACT().EXISTS()", f.EXISTS()
 print "Testing FACT().KEYS()", f.KEYS()
+print "Testing FACT()['y']",f['y']
+print "Testing FACT()['z']",f['z']
+
 facts = fcts.FACTS()
 print "Testing ENV.FACTS()"
 for fact in facts:
@@ -64,6 +70,8 @@ try:
     s.EVAL('( 2 2)')
 except Clips.EvalError, msg:
     print "Error caguht in the expression",msg
+print "EXEC():",s.EXEC("(facts)")
+print "EXEC():",s.EXEC('(printout t "Hello World !")')
 print 'STRATEGY()',s.STRATEGY(Clips._BREADTH_STRATEGY)
 print 'STRATEGY()',s.STRATEGY() == Clips._BREADTH_STRATEGY
 

@@ -36,7 +36,21 @@ cdef extern from "commline.h":
     int RouteCommand(void* env, char* cmd, int printResult)
     void FlushPPBuffer(void * theEnv)
 
-
+##
+## Service structs and classes
+##
+cdef class VOID_PTR:
+    cdef void* data
+    def __cinit__(self):
+        self.data = NULL
+    def isReady(self):
+        if self.data == NULL:
+            return False
+        return True
+    cdef set(self, void* ptr):
+        self.data = ptr
+    def __repr__(self):
+        return "<CLP:VOID *0x%x>"%<int>self.data
 
 ##
 ## STRATEGY modes
@@ -121,6 +135,9 @@ def exists_and_can_read(fname):
     return None
 
 cdef clp2py(DATA_OBJECT data):
+
+    cdef VOID_PTR vdata = VOID_PTR()
+
     if data.type == FLOAT:
         return ValueToDouble(<void*>data.value)
     elif data.type == INTEGER:
@@ -138,6 +155,9 @@ cdef clp2py(DATA_OBJECT data):
             elif _t in [SYMBOL, STRING]:
                 res.append(ValueToString(<void*>GetMFValue(<void*>data.value, v)))
         return res
+    elif data.type == EXTERNAL_ADDRESS:
+        vdata.data = <void*>data.value
+        return vdata
     else:
         return None
 
@@ -193,8 +213,7 @@ cdef class SHELL(BASEENV):
     def EXEC(self, cmd):
         if self.isReady() != True:
             raise EvalError, "SHELL() is not ready"
-        if RouteCommand(<void*>self.env, cmd, 1) != 1:
-            return False
+        RouteCommand(<void*>self.env, cmd, 1)
         FlushPPBuffer(<void*>self.env)
         return True
 

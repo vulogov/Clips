@@ -32,14 +32,13 @@ def get_clips_version(fn):
 
 ############ Build process ####################
 
-ClipsLIB_dir = _p('.', 'clipssrc')
-clips_version = get_clips_version(_p("clipssrc", "constant.h"))
+ClipsLIB_dir = _p('.', '../../clipssrc')
+clips_version = get_clips_version(_p("../../clipssrc", "constant.h"))
 print "Found CLIPS version: %s" % clips_version
 maj, min = clips_version.split('.', 1)
 
 TO_REMOVE = [
     'main.c',
-    'userfunctions.c',
     ]
 
 all_clipssrc = glob(_p(ClipsLIB_dir, '*.c'))
@@ -47,6 +46,7 @@ main_clipssrc = ['clipsmodule.c', 'clips_or.c']
 for x in all_clipssrc:
     if os.path.basename(x) in TO_REMOVE:
         all_clipssrc.remove(x)
+
 print len(all_clipssrc),"CLIPS files to compile"
 
 CFLAGS = [
@@ -58,18 +58,17 @@ CFLAGS = [
     ]
 
 LDFLAGS = [
-    '-ldl',
-    '-fvisibility=hidden',
 ]
 
-setup(name="Clips",
+setup(name="testmod",
       version="%s-clips_%s" % (CLIPSPY_VERSION, clips_version),
-      ext_modules = cythonize([Extension("Clips",
-                    ["src/Clips.pyx","src/clipsenv.c"]+all_clipssrc,
-                    extra_compile_args=CFLAGS,
-                    extra_link_args=LDFLAGS,
-                    include_dirs=[ClipsLIB_dir, "./src"]
-                    )]
-      )
-)
+      ext_modules=cythonize([Extension("testmod",
+                                       ["testmod.pyx",]+all_clipssrc,
+                                       depends=[],
+                                       extra_compile_args=CFLAGS,
+                                       include_dirs=[ClipsLIB_dir, ]
+                            )],
+                            include_path=[".", ".."]
+    )
 
+)

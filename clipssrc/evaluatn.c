@@ -128,7 +128,6 @@ globle int EvaluateExpression(
 
          oldArgument = EvaluationData(theEnv)->CurrentExpression;
          EvaluationData(theEnv)->CurrentExpression = problem;
-
          switch(fptr->returnValueType)
            {
             case 'v' :

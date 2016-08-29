@@ -2,6 +2,9 @@ cdef extern from "clips.h":
     int ArgCountCheck(void* env, char* functionName, int restr, int count)
     int ArgRangeCheck(void* env, char* functionName, int min, int max)
     int RtnArgCount(void* env)
+    char    *RtnLexeme(void* env, int argumentPosition)
+    double   RtnDouble(void* env, int argumentPosition)
+    long     RtnLong(void* env, int argumentPosition)
 
     ## DATATYPES
     cdef int FLOAT

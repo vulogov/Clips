@@ -1,4 +1,6 @@
 #include <dlfcn.h>
+#include <sys/types.h>
+#include <sys/stat.h>
 #include "clips.h"
 
 void aaa(void* env, DATA_OBJECT* ret) {
@@ -121,11 +123,51 @@ int dl_close(void* env) {
     return (TRUE);
 }
 
+
+int is_dir(void* env) {
+    struct stat statbuf;
+    DATA_OBJECT temp;
+    char* path;
+
+    if (ArgCountCheck(env, "is_dir", EXACTLY, 1) == -1)
+        return (FALSE);
+    if (ArgTypeCheck(env, "is_dir",1,STRING,&temp) == 0)
+        return (FALSE);
+    if ((path = DOToString(temp)) == NULL)
+        return (FALSE);
+    if (stat(path, &statbuf) != 0)
+        return (FALSE);
+    if (S_ISDIR(statbuf.st_mode))
+        return (TRUE);
+    return (FALSE);
+}
+
+int is_file(void* env) {
+    struct stat statbuf;
+    DATA_OBJECT temp;
+    char* path;
+
+    if (ArgCountCheck(env, "is_file", EXACTLY, 1) == -1)
+        return (FALSE);
+    if (ArgTypeCheck(env, "is_file",1,STRING,&temp) == 0)
+        return (FALSE);
+    if ((path = DOToString(temp)) == NULL)
+        return (FALSE);
+    if (stat(path, &statbuf) != 0)
+        return (FALSE);
+    if (S_ISREG(statbuf.st_mode))
+        return (TRUE);
+    return (FALSE);
+}
+
+
 void EnvUserFunctions(void *env) {
     EnvDefineFunction2(env, "dl", 'a', PTIEF dl, "dl", "2s");
     EnvDefineFunction2(env, "dlsym", 'a', PTIEF dl_sym, "dlsym", "as");
     EnvDefineFunction2(env, "dlregister", 'b', PTIEF dl_register, "dlregister", "asss");
     EnvDefineFunction2(env, "dlclose", 'b', PTIEF dl_close, "dlclose", "a");
+    EnvDefineFunction2(env, "is_dir", 'b', PTIEF is_dir, "is_dir", "s");
+    EnvDefineFunction2(env, "is_file", 'b', PTIEF is_file, "is_file", "s");
 
 }
 

@@ -19,7 +19,7 @@
 #endif
 
 __PYX_EXTERN_C DL_IMPORT(double) get_clock(void *);
-__PYX_EXTERN_C DL_IMPORT(int) get_number_of_params(void *);
+__PYX_EXTERN_C DL_IMPORT(double) get_number_of_params(void *);
 __PYX_EXTERN_C DL_IMPORT(int) init_clips_testmod(void *);
 
 #endif /* !__PYX_HAVE_API__testmod */

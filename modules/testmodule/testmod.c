@@ -655,7 +655,20 @@ static void __Pyx_AddTraceback(const char *funcname, int c_line,
                                int py_line, const char *filename);
 
 /* CIntToPy.proto */
+static CYTHON_INLINE PyObject* __Pyx_PyInt_From_int(int value);
+
+/* Print.proto */
+static int __Pyx_Print(PyObject*, PyObject *, int);
+#if CYTHON_COMPILING_IN_PYPY || PY_MAJOR_VERSION >= 3
+static PyObject* __pyx_print = 0;
+static PyObject* __pyx_print_kwargs = 0;
+#endif
+
+/* CIntToPy.proto */
 static CYTHON_INLINE PyObject* __Pyx_PyInt_From_long(long value);
+
+/* PrintOne.proto */
+static int __Pyx_PrintOne(PyObject* stream, PyObject *o);
 
 /* CIntFromPy.proto */
 static CYTHON_INLINE long __Pyx_PyInt_As_long(PyObject *);
@@ -674,18 +687,26 @@ static int __Pyx_InitStrings(__Pyx_StringTabEntry *t);
 
 /* Module declarations from 'testmod' */
 __PYX_EXTERN_C DL_EXPORT(double) get_clock(void *); /*proto*/
-__PYX_EXTERN_C DL_EXPORT(int) get_number_of_params(void *); /*proto*/
+__PYX_EXTERN_C DL_EXPORT(double) get_number_of_params(void *); /*proto*/
 __PYX_EXTERN_C DL_EXPORT(int) init_clips_testmod(void *); /*proto*/
 #define __Pyx_MODULE_NAME "testmod"
 int __pyx_module_is_main_testmod = 0;
 
 /* Implementation of 'testmod' */
+static const char __pyx_k_end[] = "end";
+static const char __pyx_k_file[] = "file";
 static const char __pyx_k_main[] = "__main__";
 static const char __pyx_k_test[] = "__test__";
 static const char __pyx_k_time[] = "time";
+static const char __pyx_k_print[] = "print";
 static const char __pyx_k_import[] = "__import__";
+static const char __pyx_k_Check_params[] = "Check params";
+static PyObject *__pyx_kp_s_Check_params;
+static PyObject *__pyx_n_s_end;
+static PyObject *__pyx_n_s_file;
 static PyObject *__pyx_n_s_import;
 static PyObject *__pyx_n_s_main;
+static PyObject *__pyx_n_s_print;
 static PyObject *__pyx_n_s_test;
 static PyObject *__pyx_n_s_time;
 
@@ -724,7 +745,7 @@ double get_clock(CYTHON_UNUSED void *__pyx_v_env) {
  *     import time
  *     return time.time()             # <<<<<<<<<<<<<<
  * 
- * cdef public int get_number_of_params(void* env):
+ * cdef public double get_number_of_params(void* env):
  */
   __pyx_t_2 = __Pyx_PyObject_GetAttrStr(__pyx_v_time, __pyx_n_s_time); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 6, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_2);
@@ -775,41 +796,153 @@ double get_clock(CYTHON_UNUSED void *__pyx_v_env) {
 /* "testmod.pyx":8
  *     return time.time()
  * 
- * cdef public int get_number_of_params(void* env):             # <<<<<<<<<<<<<<
- *     return clp.RtnArgCount(env)
- * 
+ * cdef public double get_number_of_params(void* env):             # <<<<<<<<<<<<<<
+ *     #return clp.ArgCountCheck(env, "rtn_args", clp.EXACTLY, 3)
+ *     print "Check params",clp.ArgCountCheck(env, "rtn_args", clp.EXACTLY, 3)
  */
 
-int get_number_of_params(void *__pyx_v_env) {
-  int __pyx_r;
+double get_number_of_params(void *__pyx_v_env) {
+  char *__pyx_v_str_param;
+  double __pyx_v_float_param;
+  long __pyx_v_int_param;
+  double __pyx_r;
   __Pyx_RefNannyDeclarations
+  PyObject *__pyx_t_1 = NULL;
+  PyObject *__pyx_t_2 = NULL;
+  PyObject *__pyx_t_3 = NULL;
+  PyObject *__pyx_t_4 = NULL;
   __Pyx_RefNannySetupContext("get_number_of_params", 0);
 
-  /* "testmod.pyx":9
+  /* "testmod.pyx":10
+ * cdef public double get_number_of_params(void* env):
+ *     #return clp.ArgCountCheck(env, "rtn_args", clp.EXACTLY, 3)
+ *     print "Check params",clp.ArgCountCheck(env, "rtn_args", clp.EXACTLY, 3)             # <<<<<<<<<<<<<<
+ *     str_param = clp.RtnLexeme(env, 1)
+ *     float_param = clp.RtnDouble(env, 2)
+ */
+  __pyx_t_1 = __Pyx_PyInt_From_int(ArgCountCheck(__pyx_v_env, ((char *)"rtn_args"), EXACTLY, 3)); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 10, __pyx_L1_error)
+  __Pyx_GOTREF(__pyx_t_1);
+  __pyx_t_2 = PyTuple_New(2); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 10, __pyx_L1_error)
+  __Pyx_GOTREF(__pyx_t_2);
+  __Pyx_INCREF(__pyx_kp_s_Check_params);
+  __Pyx_GIVEREF(__pyx_kp_s_Check_params);
+  PyTuple_SET_ITEM(__pyx_t_2, 0, __pyx_kp_s_Check_params);
+  __Pyx_GIVEREF(__pyx_t_1);
+  PyTuple_SET_ITEM(__pyx_t_2, 1, __pyx_t_1);
+  __pyx_t_1 = 0;
+  if (__Pyx_Print(0, __pyx_t_2, 1) < 0) __PYX_ERR(0, 10, __pyx_L1_error)
+  __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
+
+  /* "testmod.pyx":11
+ *     #return clp.ArgCountCheck(env, "rtn_args", clp.EXACTLY, 3)
+ *     print "Check params",clp.ArgCountCheck(env, "rtn_args", clp.EXACTLY, 3)
+ *     str_param = clp.RtnLexeme(env, 1)             # <<<<<<<<<<<<<<
+ *     float_param = clp.RtnDouble(env, 2)
+ *     int_param = clp.RtnLong(env, 3)
+ */
+  __pyx_v_str_param = RtnLexeme(__pyx_v_env, 1);
+
+  /* "testmod.pyx":12
+ *     print "Check params",clp.ArgCountCheck(env, "rtn_args", clp.EXACTLY, 3)
+ *     str_param = clp.RtnLexeme(env, 1)
+ *     float_param = clp.RtnDouble(env, 2)             # <<<<<<<<<<<<<<
+ *     int_param = clp.RtnLong(env, 3)
+ *     print repr(str_param),repr(float_param), repr(int_param)
+ */
+  __pyx_v_float_param = RtnDouble(__pyx_v_env, 2);
+
+  /* "testmod.pyx":13
+ *     str_param = clp.RtnLexeme(env, 1)
+ *     float_param = clp.RtnDouble(env, 2)
+ *     int_param = clp.RtnLong(env, 3)             # <<<<<<<<<<<<<<
+ *     print repr(str_param),repr(float_param), repr(int_param)
+ *     print repr(float_param+float(int_param))
+ */
+  __pyx_v_int_param = RtnLong(__pyx_v_env, 3);
+
+  /* "testmod.pyx":14
+ *     float_param = clp.RtnDouble(env, 2)
+ *     int_param = clp.RtnLong(env, 3)
+ *     print repr(str_param),repr(float_param), repr(int_param)             # <<<<<<<<<<<<<<
+ *     print repr(float_param+float(int_param))
+ *     return float_param+float(int_param)
+ */
+  __pyx_t_2 = __Pyx_PyBytes_FromString(__pyx_v_str_param); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 14, __pyx_L1_error)
+  __Pyx_GOTREF(__pyx_t_2);
+  __pyx_t_1 = PyObject_Repr(__pyx_t_2); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 14, __pyx_L1_error)
+  __Pyx_GOTREF(__pyx_t_1);
+  __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
+  __pyx_t_2 = PyFloat_FromDouble(__pyx_v_float_param); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 14, __pyx_L1_error)
+  __Pyx_GOTREF(__pyx_t_2);
+  __pyx_t_3 = PyObject_Repr(__pyx_t_2); if (unlikely(!__pyx_t_3)) __PYX_ERR(0, 14, __pyx_L1_error)
+  __Pyx_GOTREF(__pyx_t_3);
+  __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
+  __pyx_t_2 = __Pyx_PyInt_From_long(__pyx_v_int_param); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 14, __pyx_L1_error)
+  __Pyx_GOTREF(__pyx_t_2);
+  __pyx_t_4 = PyObject_Repr(__pyx_t_2); if (unlikely(!__pyx_t_4)) __PYX_ERR(0, 14, __pyx_L1_error)
+  __Pyx_GOTREF(__pyx_t_4);
+  __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
+  __pyx_t_2 = PyTuple_New(3); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 14, __pyx_L1_error)
+  __Pyx_GOTREF(__pyx_t_2);
+  __Pyx_GIVEREF(__pyx_t_1);
+  PyTuple_SET_ITEM(__pyx_t_2, 0, __pyx_t_1);
+  __Pyx_GIVEREF(__pyx_t_3);
+  PyTuple_SET_ITEM(__pyx_t_2, 1, __pyx_t_3);
+  __Pyx_GIVEREF(__pyx_t_4);
+  PyTuple_SET_ITEM(__pyx_t_2, 2, __pyx_t_4);
+  __pyx_t_1 = 0;
+  __pyx_t_3 = 0;
+  __pyx_t_4 = 0;
+  if (__Pyx_Print(0, __pyx_t_2, 1) < 0) __PYX_ERR(0, 14, __pyx_L1_error)
+  __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
+
+  /* "testmod.pyx":15
+ *     int_param = clp.RtnLong(env, 3)
+ *     print repr(str_param),repr(float_param), repr(int_param)
+ *     print repr(float_param+float(int_param))             # <<<<<<<<<<<<<<
+ *     return float_param+float(int_param)
  * 
- * cdef public int get_number_of_params(void* env):
- *     return clp.RtnArgCount(env)             # <<<<<<<<<<<<<<
+ */
+  __pyx_t_2 = PyFloat_FromDouble((__pyx_v_float_param + ((double)__pyx_v_int_param))); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 15, __pyx_L1_error)
+  __Pyx_GOTREF(__pyx_t_2);
+  __pyx_t_4 = PyObject_Repr(__pyx_t_2); if (unlikely(!__pyx_t_4)) __PYX_ERR(0, 15, __pyx_L1_error)
+  __Pyx_GOTREF(__pyx_t_4);
+  __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
+  if (__Pyx_PrintOne(0, __pyx_t_4) < 0) __PYX_ERR(0, 15, __pyx_L1_error)
+  __Pyx_DECREF(__pyx_t_4); __pyx_t_4 = 0;
+
+  /* "testmod.pyx":16
+ *     print repr(str_param),repr(float_param), repr(int_param)
+ *     print repr(float_param+float(int_param))
+ *     return float_param+float(int_param)             # <<<<<<<<<<<<<<
  * 
  * 
  */
-  __pyx_r = RtnArgCount(__pyx_v_env);
+  __pyx_r = (__pyx_v_float_param + ((double)__pyx_v_int_param));
   goto __pyx_L0;
 
   /* "testmod.pyx":8
  *     return time.time()
  * 
- * cdef public int get_number_of_params(void* env):             # <<<<<<<<<<<<<<
- *     return clp.RtnArgCount(env)
- * 
+ * cdef public double get_number_of_params(void* env):             # <<<<<<<<<<<<<<
+ *     #return clp.ArgCountCheck(env, "rtn_args", clp.EXACTLY, 3)
+ *     print "Check params",clp.ArgCountCheck(env, "rtn_args", clp.EXACTLY, 3)
  */
 
   /* function exit code */
+  __pyx_L1_error:;
+  __Pyx_XDECREF(__pyx_t_1);
+  __Pyx_XDECREF(__pyx_t_2);
+  __Pyx_XDECREF(__pyx_t_3);
+  __Pyx_XDECREF(__pyx_t_4);
+  __Pyx_WriteUnraisable("testmod.get_number_of_params", __pyx_clineno, __pyx_lineno, __pyx_filename, 0, 0);
+  __pyx_r = 0;
   __pyx_L0:;
   __Pyx_RefNannyFinishContext();
   return __pyx_r;
 }
 
-/* "testmod.pyx":12
+/* "testmod.pyx":19
  * 
  * 
  * cdef public int init_clips_testmod(void* env):             # <<<<<<<<<<<<<<
@@ -824,7 +957,7 @@ int init_clips_testmod(void *__pyx_v_env) {
   int __pyx_t_1;
   __Pyx_RefNannySetupContext("init_clips_testmod", 0);
 
-  /* "testmod.pyx":15
+  /* "testmod.pyx":22
  *     cdef void* current_env
  * 
  *     if env == NULL:             # <<<<<<<<<<<<<<
@@ -834,7 +967,7 @@ int init_clips_testmod(void *__pyx_v_env) {
   __pyx_t_1 = ((__pyx_v_env == NULL) != 0);
   if (__pyx_t_1) {
 
-    /* "testmod.pyx":16
+    /* "testmod.pyx":23
  * 
  *     if env == NULL:
  *         return 1             # <<<<<<<<<<<<<<
@@ -844,7 +977,7 @@ int init_clips_testmod(void *__pyx_v_env) {
     __pyx_r = 1;
     goto __pyx_L0;
 
-    /* "testmod.pyx":15
+    /* "testmod.pyx":22
  *     cdef void* current_env
  * 
  *     if env == NULL:             # <<<<<<<<<<<<<<
@@ -853,7 +986,7 @@ int init_clips_testmod(void *__pyx_v_env) {
  */
   }
 
-  /* "testmod.pyx":17
+  /* "testmod.pyx":24
  *     if env == NULL:
  *         return 1
  *     current_env = env             # <<<<<<<<<<<<<<
@@ -862,7 +995,7 @@ int init_clips_testmod(void *__pyx_v_env) {
  */
   __pyx_v_current_env = __pyx_v_env;
 
-  /* "testmod.pyx":19
+  /* "testmod.pyx":26
  *     current_env = env
  * 
  *     return 0             # <<<<<<<<<<<<<<
@@ -871,7 +1004,7 @@ int init_clips_testmod(void *__pyx_v_env) {
   __pyx_r = 0;
   goto __pyx_L0;
 
-  /* "testmod.pyx":12
+  /* "testmod.pyx":19
  * 
  * 
  * cdef public int init_clips_testmod(void* env):             # <<<<<<<<<<<<<<
@@ -908,8 +1041,12 @@ static struct PyModuleDef __pyx_moduledef = {
 #endif
 
 static __Pyx_StringTabEntry __pyx_string_tab[] = {
+  {&__pyx_kp_s_Check_params, __pyx_k_Check_params, sizeof(__pyx_k_Check_params), 0, 0, 1, 0},
+  {&__pyx_n_s_end, __pyx_k_end, sizeof(__pyx_k_end), 0, 0, 1, 1},
+  {&__pyx_n_s_file, __pyx_k_file, sizeof(__pyx_k_file), 0, 0, 1, 1},
   {&__pyx_n_s_import, __pyx_k_import, sizeof(__pyx_k_import), 0, 0, 1, 1},
   {&__pyx_n_s_main, __pyx_k_main, sizeof(__pyx_k_main), 0, 0, 1, 1},
+  {&__pyx_n_s_print, __pyx_k_print, sizeof(__pyx_k_print), 0, 0, 1, 1},
   {&__pyx_n_s_test, __pyx_k_test, sizeof(__pyx_k_test), 0, 0, 1, 1},
   {&__pyx_n_s_time, __pyx_k_time, sizeof(__pyx_k_time), 0, 0, 1, 1},
   {0, 0, 0, 0, 0, 0, 0}
@@ -1467,6 +1604,139 @@ bad:
 }
 
 /* CIntToPy */
+    static CYTHON_INLINE PyObject* __Pyx_PyInt_From_int(int value) {
+    const int neg_one = (int) -1, const_zero = (int) 0;
+    const int is_unsigned = neg_one > const_zero;
+    if (is_unsigned) {
+        if (sizeof(int) < sizeof(long)) {
+            return PyInt_FromLong((long) value);
+        } else if (sizeof(int) <= sizeof(unsigned long)) {
+            return PyLong_FromUnsignedLong((unsigned long) value);
+        } else if (sizeof(int) <= sizeof(unsigned PY_LONG_LONG)) {
+            return PyLong_FromUnsignedLongLong((unsigned PY_LONG_LONG) value);
+        }
+    } else {
+        if (sizeof(int) <= sizeof(long)) {
+            return PyInt_FromLong((long) value);
+        } else if (sizeof(int) <= sizeof(PY_LONG_LONG)) {
+            return PyLong_FromLongLong((PY_LONG_LONG) value);
+        }
+    }
+    {
+        int one = 1; int little = (int)*(unsigned char *)&one;
+        unsigned char *bytes = (unsigned char *)&value;
+        return _PyLong_FromByteArray(bytes, sizeof(int),
+                                     little, !is_unsigned);
+    }
+}
+
+/* Print */
+    #if !CYTHON_COMPILING_IN_PYPY && PY_MAJOR_VERSION < 3
+static PyObject *__Pyx_GetStdout(void) {
+    PyObject *f = PySys_GetObject((char *)"stdout");
+    if (!f) {
+        PyErr_SetString(PyExc_RuntimeError, "lost sys.stdout");
+    }
+    return f;
+}
+static int __Pyx_Print(PyObject* f, PyObject *arg_tuple, int newline) {
+    int i;
+    if (!f) {
+        if (!(f = __Pyx_GetStdout()))
+            return -1;
+    }
+    Py_INCREF(f);
+    for (i=0; i < PyTuple_GET_SIZE(arg_tuple); i++) {
+        PyObject* v;
+        if (PyFile_SoftSpace(f, 1)) {
+            if (PyFile_WriteString(" ", f) < 0)
+                goto error;
+        }
+        v = PyTuple_GET_ITEM(arg_tuple, i);
+        if (PyFile_WriteObject(v, f, Py_PRINT_RAW) < 0)
+            goto error;
+        if (PyString_Check(v)) {
+            char *s = PyString_AsString(v);
+            Py_ssize_t len = PyString_Size(v);
+            if (len > 0) {
+                switch (s[len-1]) {
+                    case ' ': break;
+                    case '\f': case '\r': case '\n': case '\t': case '\v':
+                        PyFile_SoftSpace(f, 0);
+                        break;
+                    default:  break;
+                }
+            }
+        }
+    }
+    if (newline) {
+        if (PyFile_WriteString("\n", f) < 0)
+            goto error;
+        PyFile_SoftSpace(f, 0);
+    }
+    Py_DECREF(f);
+    return 0;
+error:
+    Py_DECREF(f);
+    return -1;
+}
+#else
+static int __Pyx_Print(PyObject* stream, PyObject *arg_tuple, int newline) {
+    PyObject* kwargs = 0;
+    PyObject* result = 0;
+    PyObject* end_string;
+    if (unlikely(!__pyx_print)) {
+        __pyx_print = PyObject_GetAttr(__pyx_b, __pyx_n_s_print);
+        if (!__pyx_print)
+            return -1;
+    }
+    if (stream) {
+        kwargs = PyDict_New();
+        if (unlikely(!kwargs))
+            return -1;
+        if (unlikely(PyDict_SetItem(kwargs, __pyx_n_s_file, stream) < 0))
+            goto bad;
+        if (!newline) {
+            end_string = PyUnicode_FromStringAndSize(" ", 1);
+            if (unlikely(!end_string))
+                goto bad;
+            if (PyDict_SetItem(kwargs, __pyx_n_s_end, end_string) < 0) {
+                Py_DECREF(end_string);
+                goto bad;
+            }
+            Py_DECREF(end_string);
+        }
+    } else if (!newline) {
+        if (unlikely(!__pyx_print_kwargs)) {
+            __pyx_print_kwargs = PyDict_New();
+            if (unlikely(!__pyx_print_kwargs))
+                return -1;
+            end_string = PyUnicode_FromStringAndSize(" ", 1);
+            if (unlikely(!end_string))
+                return -1;
+            if (PyDict_SetItem(__pyx_print_kwargs, __pyx_n_s_end, end_string) < 0) {
+                Py_DECREF(end_string);
+                return -1;
+            }
+            Py_DECREF(end_string);
+        }
+        kwargs = __pyx_print_kwargs;
+    }
+    result = PyObject_Call(__pyx_print, arg_tuple, kwargs);
+    if (unlikely(kwargs) && (kwargs != __pyx_print_kwargs))
+        Py_DECREF(kwargs);
+    if (!result)
+        return -1;
+    Py_DECREF(result);
+    return 0;
+bad:
+    if (kwargs != __pyx_print_kwargs)
+        Py_XDECREF(kwargs);
+    return -1;
+}
+#endif
+
+/* CIntToPy */
     static CYTHON_INLINE PyObject* __Pyx_PyInt_From_long(long value) {
     const long neg_one = (long) -1, const_zero = (long) 0;
     const int is_unsigned = neg_one > const_zero;
@@ -1492,6 +1762,43 @@ bad:
                                      little, !is_unsigned);
     }
 }
+
+/* PrintOne */
+    #if !CYTHON_COMPILING_IN_PYPY && PY_MAJOR_VERSION < 3
+static int __Pyx_PrintOne(PyObject* f, PyObject *o) {
+    if (!f) {
+        if (!(f = __Pyx_GetStdout()))
+            return -1;
+    }
+    Py_INCREF(f);
+    if (PyFile_SoftSpace(f, 0)) {
+        if (PyFile_WriteString(" ", f) < 0)
+            goto error;
+    }
+    if (PyFile_WriteObject(o, f, Py_PRINT_RAW) < 0)
+        goto error;
+    if (PyFile_WriteString("\n", f) < 0)
+        goto error;
+    Py_DECREF(f);
+    return 0;
+error:
+    Py_DECREF(f);
+    return -1;
+    /* the line below is just to avoid C compiler
+     * warnings about unused functions */
+    return __Pyx_Print(f, NULL, 0);
+}
+#else
+static int __Pyx_PrintOne(PyObject* stream, PyObject *o) {
+    int res;
+    PyObject* arg_tuple = PyTuple_Pack(1, o);
+    if (unlikely(!arg_tuple))
+        return -1;
+    res = __Pyx_Print(stream, arg_tuple, 1);
+    Py_DECREF(arg_tuple);
+    return res;
+}
+#endif
 
 /* CIntFromPyVerify */
     #define __PYX_VERIFY_RETURN_INT(target_type, func_type, func_value)\

@@ -2,6 +2,8 @@ __author__ = 'Vladimir Ulogov'
 
 import os
 import uuid
+import fnmatch
+import posixpath
 from cpython.mem cimport PyMem_Malloc, PyMem_Realloc, PyMem_Free
 
 
@@ -122,7 +124,12 @@ cdef extern from "clips.h":
     int GetFactSlot(void* env, void* factPtr, char* slotName, DATA_OBJECT* theValue)
     ## Work with evaluations
     int Eval(void* env, char* expressionString, DATA_OBJECT* result)
+    ## Work with the routers
+    int   DeactivateRouter(void* env, char *routerName)
     int   ActivateRouter(void* env, char *routerName)
+    ## Debug functions
+    int   Watch(void* env, char* item)
+    int   Unwatch(void* env, char* item)
 
 
 
@@ -381,6 +388,47 @@ cdef class FACTS(BASEENV):
         facts = '\n'.join(self.transactions[trid])
         return self.ASSERTS(facts)
 
+cdef class DLLOADER(BASEENV):
+    cdef object theenv
+    cdef object clips_base
+    cdef object mods_base
+    cdef object mods
+    cdef object shell
+
+    def __cinit__(self):
+        BASEENV.Cinit(self)
+    def  DL(self, clips_base, mods_base, *mods):
+        self.clips_base = clips_base
+        self.mods_base = mods_base
+        self.mods = mods
+        self.theenv.CLEAR()
+        self.theenv.LOAD(self.clips_base + "/dl.clp")
+        for i in os.listdir(self.mods_base):
+            if fnmatch.fnmatch(i, "*.clp"):
+                mpath = self.mods_base + "/" + i
+                mod, ext = posixpath.splitext(i)
+                if len(self.mods) == 0:
+                    self.theenv.LOAD(mpath)
+                elif len(self.mods) > 0 and mod in self.mods:
+                    self.theenv.LOAD(mpath)
+                else:
+                    continue
+        self.theenv.RESET()
+        self.shell.RUN()
+        self.theenv.RESET()
+        self.shell.RUN()
+        self.theenv.CLEAR()
+
+    cdef create(self, void* env, object theenv):
+        BASEENV.Create(self, <void*>env)
+        self.theenv = theenv
+        self.shell = self.theenv.SHELL()
+    def WATCH(self, name="all"):
+        self.theenv.WATCH(name)
+    def UNWATCH(self, name):
+        self.theenv.UNWATCH(name)
+
+
 cdef class ENV(BASEENV):
     def __cinit__(self):
         BASEENV.Cinit(self)
@@ -431,6 +479,18 @@ cdef class ENV(BASEENV):
         s = SHELL()
         s.create(<void*>self.env)
         return s
+    def DL(self):
+        if self.ready != True:
+            return None
+        d = DLLOADER()
+        d.create(<void*>self.env, self)
+        return d
+    def WATCH(self, name):
+        return Watch(<void*>self.env, name)
+    def UNWATCH(self, name):
+            return Unwatch( < void * > self.env, name)
+    def deactivateROUTER(self, name):
+        return DeactivateRouter(<void*>self.env, name)
     def __dealloc__(self):
         if self.ready == True:
             DestroyEnvironment(self.env)

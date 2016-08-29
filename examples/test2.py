@@ -15,11 +15,12 @@ print "Registering function (getclock ...) from dynamic library",
 print s.EVAL('(dlregister ?*fun* "getclock" "" "d")')
 print "Registering function (rtn_args...) from dynamic library",
 s.EXEC('(defglobal ?*fun2* = (dlsym ?*handle* "get_number_of_params"))')
-print s.EVAL('(dlregister ?*fun2* "rtn_args" "s" "d")')
+print s.EVAL('(dlregister ?*fun2* "rtn_args" "snn" "d")')
 print "EVAL: (getclock)",s.EVAL('(getclock)')
 print "Value from the Python into CLIPS context"
 s.EXEC('(defglobal ?*clock* = (getclock))')
 s.EXEC('(printout t "The ?*clock* is: " ?*clock* crlf)')
-s.EXEC('(printout t "# params:" (rtn_args "boo") crlf)')
+s.EXEC('(printout t "# params:"  crlf)')
+s.EXEC('(printout t (rtn_args "boo" 3.14 42) crlf)')
 print 'EVAL: (dlclose ...)',s.EVAL('(dlclose ?*handle*)')
 

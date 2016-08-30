@@ -1,6 +1,12 @@
 cimport CLPmod as clp
 
 
+class A:
+    def __init__(self):
+        print "Class A Constructor is called"
+    def a(self):
+        print "Method a() called",self
+
 cdef public double get_clock(void* env):
     import time
     return time.time()
@@ -14,6 +20,22 @@ cdef public double get_number_of_params(void* env):
     print repr(str_param),repr(float_param), repr(int_param)
     print repr(float_param+float(int_param))
     return float_param+float(int_param)
+
+cdef public object make_class(void* env):
+    return A()
+
+cdef public object call_a(void* env):
+    cdef object a
+    cdef clp.DATA_OBJECT data
+    if clp.ArgCountCheck(env, "call_a", clp.EXACTLY, 1) != 1:
+        return <object>(NULL)
+    clp.RtnUnknown(env, 1, &data)
+    if data.type == clp.EXTERNAL_ADDRESS:
+        a = <object>data.value
+        a.a()
+        return <object>a
+    else:
+        return <object>(NULL)
 
 
 cdef public int init_clips_testmod(void* env):

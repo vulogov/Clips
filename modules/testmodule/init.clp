@@ -14,6 +14,19 @@
         (sym "get_clock")
         (retvalue "d")
     )
+    (FUN
+        (name "makeA")
+        (sym  "make_class")
+        (module "testmod")
+        (retvalue "a")
+    )
+    (FUN
+        (name "call_a")
+        (sym  "call_a")
+        (module "testmod")
+        (retvalue "a")
+        (params "a")
+    )
 )
 
 

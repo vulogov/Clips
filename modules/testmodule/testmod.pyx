@@ -37,6 +37,17 @@ cdef public object call_a(void* env):
     else:
         return <object>(NULL)
 
+cdef public object call_b(void* env):
+    cdef object a
+    a = clp.getPyObjectFromArgs(env, "call_b", 1)
+    a.a()
+    return a
+
+cdef public object print_params(void* env):
+    for i in range(1,5):
+        print repr(clp.getArgument(env, "print_params", i))
+    return <object>None
+
 
 cdef public int init_clips_testmod(void* env):
     cdef void* current_env

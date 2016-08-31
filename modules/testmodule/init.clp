@@ -27,6 +27,20 @@
         (retvalue "a")
         (params "a")
     )
+    (FUN
+        (name "call_b")
+        (sym  "call_b")
+        (module "testmod")
+        (retvalue "a")
+        (params "a")
+    )
+    (FUN
+        (name "print_params")
+        (sym  "print_params")
+        (module "testmod")
+        (retvalue "a")
+        (params "sidm")
+    )
 )
 
 

@@ -1,3 +1,3 @@
-(deffacts DYNPATH
+(deffacts DYNMODS
     (DYNPATH (path "./modules/testmodule"))
 )

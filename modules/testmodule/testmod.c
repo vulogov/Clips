@@ -497,6 +497,7 @@ static const char *__pyx_filename;
 
 static const char *__pyx_f[] = {
   "testmod.pyx",
+  "CLPmod.pxd",
 };
 
 /*--- Type declarations ---*/
@@ -581,6 +582,9 @@ static CYTHON_INLINE PyObject* __Pyx_PyObject_GetAttrStr(PyObject* obj, PyObject
 #define __Pyx_PyObject_GetAttrStr(o,n) PyObject_GetAttr(o,n)
 #endif
 
+/* GetBuiltinName.proto */
+static PyObject *__Pyx_GetBuiltinName(PyObject *name);
+
 /* Import.proto */
 static PyObject *__Pyx_Import(PyObject *name, PyObject *from_list, int level);
 
@@ -635,11 +639,25 @@ static void __Pyx_WriteUnraisable(const char *name, int clineno,
                                   int lineno, const char *filename,
                                   int full_traceback, int nogil);
 
-/* GetBuiltinName.proto */
-static PyObject *__Pyx_GetBuiltinName(PyObject *name);
-
 /* GetModuleGlobalName.proto */
 static CYTHON_INLINE PyObject *__Pyx_GetModuleGlobalName(PyObject *name);
+
+/* ListAppend.proto */
+#if CYTHON_COMPILING_IN_CPYTHON
+static CYTHON_INLINE int __Pyx_PyList_Append(PyObject* list, PyObject* x) {
+    PyListObject* L = (PyListObject*) list;
+    Py_ssize_t len = Py_SIZE(list);
+    if (likely(L->allocated > len) & likely(len > (L->allocated >> 1))) {
+        Py_INCREF(x);
+        PyList_SET_ITEM(list, len, x);
+        Py_SIZE(list) = len+1;
+        return 0;
+    }
+    return PyList_Append(list, x);
+}
+#else
+#define __Pyx_PyList_Append(L,x) PyList_Append(L,x)
+#endif
 
 /* FetchCommonType.proto */
 static PyTypeObject* __Pyx_FetchCommonType(PyTypeObject* type);
@@ -756,17 +774,22 @@ static int __Pyx_InitStrings(__Pyx_StringTabEntry *t);
 
 
 /* Module declarations from 'CLPmod' */
+static CYTHON_INLINE PyObject *__pyx_f_6CLPmod_getPyObjectFromArgs(void *, char *, int); /*proto*/
+static CYTHON_INLINE PyObject *__pyx_f_6CLPmod_getArgument(void *, char *, int); /*proto*/
 
 /* Module declarations from 'testmod' */
 __PYX_EXTERN_C DL_EXPORT(double) get_clock(void *); /*proto*/
 __PYX_EXTERN_C DL_EXPORT(double) get_number_of_params(void *); /*proto*/
 __PYX_EXTERN_C DL_EXPORT(PyObject) *make_class(void *); /*proto*/
 __PYX_EXTERN_C DL_EXPORT(PyObject) *call_a(void *); /*proto*/
+__PYX_EXTERN_C DL_EXPORT(PyObject) *call_b(void *); /*proto*/
+__PYX_EXTERN_C DL_EXPORT(PyObject) *print_params(void *); /*proto*/
 __PYX_EXTERN_C DL_EXPORT(int) init_clips_testmod(void *); /*proto*/
 #define __Pyx_MODULE_NAME "testmod"
 int __pyx_module_is_main_testmod = 0;
 
 /* Implementation of 'testmod' */
+static PyObject *__pyx_builtin_range;
 static const char __pyx_k_A[] = "A";
 static const char __pyx_k_a[] = "a";
 static const char __pyx_k_A_a[] = "A.a";
@@ -779,6 +802,7 @@ static const char __pyx_k_self[] = "self";
 static const char __pyx_k_test[] = "__test__";
 static const char __pyx_k_time[] = "time";
 static const char __pyx_k_print[] = "print";
+static const char __pyx_k_range[] = "range";
 static const char __pyx_k_import[] = "__import__";
 static const char __pyx_k_module[] = "__module__";
 static const char __pyx_k_prepare[] = "__prepare__";
@@ -809,6 +833,7 @@ static PyObject *__pyx_n_s_module;
 static PyObject *__pyx_n_s_prepare;
 static PyObject *__pyx_n_s_print;
 static PyObject *__pyx_n_s_qualname;
+static PyObject *__pyx_n_s_range;
 static PyObject *__pyx_n_s_self;
 static PyObject *__pyx_n_s_test;
 static PyObject *__pyx_n_s_testmod;
@@ -1380,7 +1405,7 @@ PyObject *call_a(void *__pyx_v_env) {
  *     else:
  *         return <object>(NULL)             # <<<<<<<<<<<<<<
  * 
- * 
+ * cdef public object call_b(void* env):
  */
   /*else*/ {
     __Pyx_XDECREF(__pyx_r);
@@ -1411,7 +1436,174 @@ PyObject *call_a(void *__pyx_v_env) {
   return __pyx_r;
 }
 
-/* "testmod.pyx":41
+/* "testmod.pyx":40
+ *         return <object>(NULL)
+ * 
+ * cdef public object call_b(void* env):             # <<<<<<<<<<<<<<
+ *     cdef object a
+ *     a = clp.getPyObjectFromArgs(env, "call_b", 1)
+ */
+
+PyObject *call_b(void *__pyx_v_env) {
+  PyObject *__pyx_v_a = 0;
+  PyObject *__pyx_r = NULL;
+  __Pyx_RefNannyDeclarations
+  PyObject *__pyx_t_1 = NULL;
+  PyObject *__pyx_t_2 = NULL;
+  PyObject *__pyx_t_3 = NULL;
+  __Pyx_RefNannySetupContext("call_b", 0);
+
+  /* "testmod.pyx":42
+ * cdef public object call_b(void* env):
+ *     cdef object a
+ *     a = clp.getPyObjectFromArgs(env, "call_b", 1)             # <<<<<<<<<<<<<<
+ *     a.a()
+ *     return a
+ */
+  __pyx_t_1 = __pyx_f_6CLPmod_getPyObjectFromArgs(__pyx_v_env, ((char *)"call_b"), 1); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 42, __pyx_L1_error)
+  __Pyx_GOTREF(__pyx_t_1);
+  __pyx_v_a = __pyx_t_1;
+  __pyx_t_1 = 0;
+
+  /* "testmod.pyx":43
+ *     cdef object a
+ *     a = clp.getPyObjectFromArgs(env, "call_b", 1)
+ *     a.a()             # <<<<<<<<<<<<<<
+ *     return a
+ * 
+ */
+  __pyx_t_2 = __Pyx_PyObject_GetAttrStr(__pyx_v_a, __pyx_n_s_a); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 43, __pyx_L1_error)
+  __Pyx_GOTREF(__pyx_t_2);
+  __pyx_t_3 = NULL;
+  if (CYTHON_COMPILING_IN_CPYTHON && likely(PyMethod_Check(__pyx_t_2))) {
+    __pyx_t_3 = PyMethod_GET_SELF(__pyx_t_2);
+    if (likely(__pyx_t_3)) {
+      PyObject* function = PyMethod_GET_FUNCTION(__pyx_t_2);
+      __Pyx_INCREF(__pyx_t_3);
+      __Pyx_INCREF(function);
+      __Pyx_DECREF_SET(__pyx_t_2, function);
+    }
+  }
+  if (__pyx_t_3) {
+    __pyx_t_1 = __Pyx_PyObject_CallOneArg(__pyx_t_2, __pyx_t_3); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 43, __pyx_L1_error)
+    __Pyx_DECREF(__pyx_t_3); __pyx_t_3 = 0;
+  } else {
+    __pyx_t_1 = __Pyx_PyObject_CallNoArg(__pyx_t_2); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 43, __pyx_L1_error)
+  }
+  __Pyx_GOTREF(__pyx_t_1);
+  __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
+  __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
+
+  /* "testmod.pyx":44
+ *     a = clp.getPyObjectFromArgs(env, "call_b", 1)
+ *     a.a()
+ *     return a             # <<<<<<<<<<<<<<
+ * 
+ * cdef public object print_params(void* env):
+ */
+  __Pyx_XDECREF(__pyx_r);
+  __Pyx_INCREF(__pyx_v_a);
+  __pyx_r = __pyx_v_a;
+  goto __pyx_L0;
+
+  /* "testmod.pyx":40
+ *         return <object>(NULL)
+ * 
+ * cdef public object call_b(void* env):             # <<<<<<<<<<<<<<
+ *     cdef object a
+ *     a = clp.getPyObjectFromArgs(env, "call_b", 1)
+ */
+
+  /* function exit code */
+  __pyx_L1_error:;
+  __Pyx_XDECREF(__pyx_t_1);
+  __Pyx_XDECREF(__pyx_t_2);
+  __Pyx_XDECREF(__pyx_t_3);
+  __Pyx_AddTraceback("testmod.call_b", __pyx_clineno, __pyx_lineno, __pyx_filename);
+  __pyx_r = 0;
+  __pyx_L0:;
+  __Pyx_XDECREF(__pyx_v_a);
+  __Pyx_XGIVEREF(__pyx_r);
+  __Pyx_RefNannyFinishContext();
+  return __pyx_r;
+}
+
+/* "testmod.pyx":46
+ *     return a
+ * 
+ * cdef public object print_params(void* env):             # <<<<<<<<<<<<<<
+ *     for i in range(1,5):
+ *         print repr(clp.getArgument(env, "print_params", i))
+ */
+
+PyObject *print_params(void *__pyx_v_env) {
+  long __pyx_v_i;
+  PyObject *__pyx_r = NULL;
+  __Pyx_RefNannyDeclarations
+  long __pyx_t_1;
+  PyObject *__pyx_t_2 = NULL;
+  PyObject *__pyx_t_3 = NULL;
+  __Pyx_RefNannySetupContext("print_params", 0);
+
+  /* "testmod.pyx":47
+ * 
+ * cdef public object print_params(void* env):
+ *     for i in range(1,5):             # <<<<<<<<<<<<<<
+ *         print repr(clp.getArgument(env, "print_params", i))
+ *     return <object>None
+ */
+  for (__pyx_t_1 = 1; __pyx_t_1 < 5; __pyx_t_1+=1) {
+    __pyx_v_i = __pyx_t_1;
+
+    /* "testmod.pyx":48
+ * cdef public object print_params(void* env):
+ *     for i in range(1,5):
+ *         print repr(clp.getArgument(env, "print_params", i))             # <<<<<<<<<<<<<<
+ *     return <object>None
+ * 
+ */
+    __pyx_t_2 = __pyx_f_6CLPmod_getArgument(__pyx_v_env, ((char *)"print_params"), __pyx_v_i); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 48, __pyx_L1_error)
+    __Pyx_GOTREF(__pyx_t_2);
+    __pyx_t_3 = PyObject_Repr(__pyx_t_2); if (unlikely(!__pyx_t_3)) __PYX_ERR(0, 48, __pyx_L1_error)
+    __Pyx_GOTREF(__pyx_t_3);
+    __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
+    if (__Pyx_PrintOne(0, __pyx_t_3) < 0) __PYX_ERR(0, 48, __pyx_L1_error)
+    __Pyx_DECREF(__pyx_t_3); __pyx_t_3 = 0;
+  }
+
+  /* "testmod.pyx":49
+ *     for i in range(1,5):
+ *         print repr(clp.getArgument(env, "print_params", i))
+ *     return <object>None             # <<<<<<<<<<<<<<
+ * 
+ * 
+ */
+  __Pyx_XDECREF(__pyx_r);
+  __Pyx_INCREF(((PyObject *)Py_None));
+  __pyx_r = Py_None;
+  goto __pyx_L0;
+
+  /* "testmod.pyx":46
+ *     return a
+ * 
+ * cdef public object print_params(void* env):             # <<<<<<<<<<<<<<
+ *     for i in range(1,5):
+ *         print repr(clp.getArgument(env, "print_params", i))
+ */
+
+  /* function exit code */
+  __pyx_L1_error:;
+  __Pyx_XDECREF(__pyx_t_2);
+  __Pyx_XDECREF(__pyx_t_3);
+  __Pyx_AddTraceback("testmod.print_params", __pyx_clineno, __pyx_lineno, __pyx_filename);
+  __pyx_r = 0;
+  __pyx_L0:;
+  __Pyx_XGIVEREF(__pyx_r);
+  __Pyx_RefNannyFinishContext();
+  return __pyx_r;
+}
+
+/* "testmod.pyx":52
  * 
  * 
  * cdef public int init_clips_testmod(void* env):             # <<<<<<<<<<<<<<
@@ -1426,7 +1618,7 @@ int init_clips_testmod(void *__pyx_v_env) {
   int __pyx_t_1;
   __Pyx_RefNannySetupContext("init_clips_testmod", 0);
 
-  /* "testmod.pyx":44
+  /* "testmod.pyx":55
  *     cdef void* current_env
  * 
  *     if env == NULL:             # <<<<<<<<<<<<<<
@@ -1436,7 +1628,7 @@ int init_clips_testmod(void *__pyx_v_env) {
   __pyx_t_1 = ((__pyx_v_env == NULL) != 0);
   if (__pyx_t_1) {
 
-    /* "testmod.pyx":45
+    /* "testmod.pyx":56
  * 
  *     if env == NULL:
  *         return 1             # <<<<<<<<<<<<<<
@@ -1446,7 +1638,7 @@ int init_clips_testmod(void *__pyx_v_env) {
     __pyx_r = 1;
     goto __pyx_L0;
 
-    /* "testmod.pyx":44
+    /* "testmod.pyx":55
  *     cdef void* current_env
  * 
  *     if env == NULL:             # <<<<<<<<<<<<<<
@@ -1455,7 +1647,7 @@ int init_clips_testmod(void *__pyx_v_env) {
  */
   }
 
-  /* "testmod.pyx":46
+  /* "testmod.pyx":57
  *     if env == NULL:
  *         return 1
  *     current_env = env             # <<<<<<<<<<<<<<
@@ -1464,7 +1656,7 @@ int init_clips_testmod(void *__pyx_v_env) {
  */
   __pyx_v_current_env = __pyx_v_env;
 
-  /* "testmod.pyx":48
+  /* "testmod.pyx":59
  *     current_env = env
  * 
  *     return 0             # <<<<<<<<<<<<<<
@@ -1473,7 +1665,7 @@ int init_clips_testmod(void *__pyx_v_env) {
   __pyx_r = 0;
   goto __pyx_L0;
 
-  /* "testmod.pyx":41
+  /* "testmod.pyx":52
  * 
  * 
  * cdef public int init_clips_testmod(void* env):             # <<<<<<<<<<<<<<
@@ -1483,6 +1675,584 @@ int init_clips_testmod(void *__pyx_v_env) {
 
   /* function exit code */
   __pyx_L0:;
+  __Pyx_RefNannyFinishContext();
+  return __pyx_r;
+}
+
+/* "CLPmod.pxd":51
+ *     cdef int RANGE
+ * 
+ * cdef inline object getPyObjectFromArgs(void* env, char* function, int position):             # <<<<<<<<<<<<<<
+ *     cdef object obj
+ *     cdef DATA_OBJECT data
+ */
+
+static CYTHON_INLINE PyObject *__pyx_f_6CLPmod_getPyObjectFromArgs(void *__pyx_v_env, char *__pyx_v_function, int __pyx_v_position) {
+  PyObject *__pyx_v_obj = 0;
+  DATA_OBJECT __pyx_v_data;
+  PyObject *__pyx_r = NULL;
+  __Pyx_RefNannyDeclarations
+  int __pyx_t_1;
+  PyObject *__pyx_t_2 = NULL;
+  __Pyx_RefNannySetupContext("getPyObjectFromArgs", 0);
+
+  /* "CLPmod.pxd":55
+ *     cdef DATA_OBJECT data
+ * 
+ *     if ArgCountCheck(env, function, AT_LEAST, position) == 0:             # <<<<<<<<<<<<<<
+ *         return None
+ *     RtnUnknown(env, position, &data)
+ */
+  __pyx_t_1 = ((ArgCountCheck(__pyx_v_env, __pyx_v_function, AT_LEAST, __pyx_v_position) == 0) != 0);
+  if (__pyx_t_1) {
+
+    /* "CLPmod.pxd":56
+ * 
+ *     if ArgCountCheck(env, function, AT_LEAST, position) == 0:
+ *         return None             # <<<<<<<<<<<<<<
+ *     RtnUnknown(env, position, &data)
+ *     if data.type == EXTERNAL_ADDRESS:
+ */
+    __Pyx_XDECREF(__pyx_r);
+    __Pyx_INCREF(Py_None);
+    __pyx_r = Py_None;
+    goto __pyx_L0;
+
+    /* "CLPmod.pxd":55
+ *     cdef DATA_OBJECT data
+ * 
+ *     if ArgCountCheck(env, function, AT_LEAST, position) == 0:             # <<<<<<<<<<<<<<
+ *         return None
+ *     RtnUnknown(env, position, &data)
+ */
+  }
+
+  /* "CLPmod.pxd":57
+ *     if ArgCountCheck(env, function, AT_LEAST, position) == 0:
+ *         return None
+ *     RtnUnknown(env, position, &data)             # <<<<<<<<<<<<<<
+ *     if data.type == EXTERNAL_ADDRESS:
+ *         obj = <object>data.value
+ */
+  RtnUnknown(__pyx_v_env, __pyx_v_position, (&__pyx_v_data));
+
+  /* "CLPmod.pxd":58
+ *         return None
+ *     RtnUnknown(env, position, &data)
+ *     if data.type == EXTERNAL_ADDRESS:             # <<<<<<<<<<<<<<
+ *         obj = <object>data.value
+ *         return <object>obj
+ */
+  __pyx_t_1 = ((__pyx_v_data.type == EXTERNAL_ADDRESS) != 0);
+  if (__pyx_t_1) {
+
+    /* "CLPmod.pxd":59
+ *     RtnUnknown(env, position, &data)
+ *     if data.type == EXTERNAL_ADDRESS:
+ *         obj = <object>data.value             # <<<<<<<<<<<<<<
+ *         return <object>obj
+ *     return None
+ */
+    __pyx_t_2 = ((PyObject *)__pyx_v_data.value);
+    __Pyx_INCREF(__pyx_t_2);
+    __pyx_v_obj = __pyx_t_2;
+    __pyx_t_2 = 0;
+
+    /* "CLPmod.pxd":60
+ *     if data.type == EXTERNAL_ADDRESS:
+ *         obj = <object>data.value
+ *         return <object>obj             # <<<<<<<<<<<<<<
+ *     return None
+ * 
+ */
+    __Pyx_XDECREF(__pyx_r);
+    __Pyx_INCREF(((PyObject *)__pyx_v_obj));
+    __pyx_r = __pyx_v_obj;
+    goto __pyx_L0;
+
+    /* "CLPmod.pxd":58
+ *         return None
+ *     RtnUnknown(env, position, &data)
+ *     if data.type == EXTERNAL_ADDRESS:             # <<<<<<<<<<<<<<
+ *         obj = <object>data.value
+ *         return <object>obj
+ */
+  }
+
+  /* "CLPmod.pxd":61
+ *         obj = <object>data.value
+ *         return <object>obj
+ *     return None             # <<<<<<<<<<<<<<
+ * 
+ * cdef inline getArgument(void* env, char* function, int position):
+ */
+  __Pyx_XDECREF(__pyx_r);
+  __Pyx_INCREF(Py_None);
+  __pyx_r = Py_None;
+  goto __pyx_L0;
+
+  /* "CLPmod.pxd":51
+ *     cdef int RANGE
+ * 
+ * cdef inline object getPyObjectFromArgs(void* env, char* function, int position):             # <<<<<<<<<<<<<<
+ *     cdef object obj
+ *     cdef DATA_OBJECT data
+ */
+
+  /* function exit code */
+  __pyx_L0:;
+  __Pyx_XDECREF(__pyx_v_obj);
+  __Pyx_XGIVEREF(__pyx_r);
+  __Pyx_RefNannyFinishContext();
+  return __pyx_r;
+}
+
+/* "CLPmod.pxd":63
+ *     return None
+ * 
+ * cdef inline getArgument(void* env, char* function, int position):             # <<<<<<<<<<<<<<
+ *     cdef DATA_OBJECT data
+ * 
+ */
+
+static CYTHON_INLINE PyObject *__pyx_f_6CLPmod_getArgument(void *__pyx_v_env, char *__pyx_v_function, int __pyx_v_position) {
+  DATA_OBJECT __pyx_v_data;
+  PyObject *__pyx_v_res = NULL;
+  long __pyx_v_v;
+  int __pyx_v__t;
+  PyObject *__pyx_r = NULL;
+  __Pyx_RefNannyDeclarations
+  int __pyx_t_1;
+  PyObject *__pyx_t_2 = NULL;
+  unsigned short __pyx_t_3;
+  int __pyx_t_4;
+  long __pyx_t_5;
+  long __pyx_t_6;
+  int __pyx_t_7;
+  int __pyx_t_8;
+  void *__pyx_t_9;
+  __Pyx_RefNannySetupContext("getArgument", 0);
+
+  /* "CLPmod.pxd":66
+ *     cdef DATA_OBJECT data
+ * 
+ *     if ArgCountCheck(env, function, AT_LEAST, position) == 0:             # <<<<<<<<<<<<<<
+ *         return None
+ *     RtnUnknown(env, position, &data)
+ */
+  __pyx_t_1 = ((ArgCountCheck(__pyx_v_env, __pyx_v_function, AT_LEAST, __pyx_v_position) == 0) != 0);
+  if (__pyx_t_1) {
+
+    /* "CLPmod.pxd":67
+ * 
+ *     if ArgCountCheck(env, function, AT_LEAST, position) == 0:
+ *         return None             # <<<<<<<<<<<<<<
+ *     RtnUnknown(env, position, &data)
+ *     if data.type == FLOAT:
+ */
+    __Pyx_XDECREF(__pyx_r);
+    __Pyx_INCREF(Py_None);
+    __pyx_r = Py_None;
+    goto __pyx_L0;
+
+    /* "CLPmod.pxd":66
+ *     cdef DATA_OBJECT data
+ * 
+ *     if ArgCountCheck(env, function, AT_LEAST, position) == 0:             # <<<<<<<<<<<<<<
+ *         return None
+ *     RtnUnknown(env, position, &data)
+ */
+  }
+
+  /* "CLPmod.pxd":68
+ *     if ArgCountCheck(env, function, AT_LEAST, position) == 0:
+ *         return None
+ *     RtnUnknown(env, position, &data)             # <<<<<<<<<<<<<<
+ *     if data.type == FLOAT:
+ *         return RtnDouble(env, position)
+ */
+  RtnUnknown(__pyx_v_env, __pyx_v_position, (&__pyx_v_data));
+
+  /* "CLPmod.pxd":69
+ *         return None
+ *     RtnUnknown(env, position, &data)
+ *     if data.type == FLOAT:             # <<<<<<<<<<<<<<
+ *         return RtnDouble(env, position)
+ *     elif data.type == INTEGER:
+ */
+  __pyx_t_1 = ((__pyx_v_data.type == FLOAT) != 0);
+  if (__pyx_t_1) {
+
+    /* "CLPmod.pxd":70
+ *     RtnUnknown(env, position, &data)
+ *     if data.type == FLOAT:
+ *         return RtnDouble(env, position)             # <<<<<<<<<<<<<<
+ *     elif data.type == INTEGER:
+ *         return RtnLong(env, position)
+ */
+    __Pyx_XDECREF(__pyx_r);
+    __pyx_t_2 = PyFloat_FromDouble(RtnDouble(__pyx_v_env, __pyx_v_position)); if (unlikely(!__pyx_t_2)) __PYX_ERR(1, 70, __pyx_L1_error)
+    __Pyx_GOTREF(__pyx_t_2);
+    __pyx_r = __pyx_t_2;
+    __pyx_t_2 = 0;
+    goto __pyx_L0;
+
+    /* "CLPmod.pxd":69
+ *         return None
+ *     RtnUnknown(env, position, &data)
+ *     if data.type == FLOAT:             # <<<<<<<<<<<<<<
+ *         return RtnDouble(env, position)
+ *     elif data.type == INTEGER:
+ */
+  }
+
+  /* "CLPmod.pxd":71
+ *     if data.type == FLOAT:
+ *         return RtnDouble(env, position)
+ *     elif data.type == INTEGER:             # <<<<<<<<<<<<<<
+ *         return RtnLong(env, position)
+ *     elif data.type in [SYMBOL, STRING]:
+ */
+  __pyx_t_1 = ((__pyx_v_data.type == INTEGER) != 0);
+  if (__pyx_t_1) {
+
+    /* "CLPmod.pxd":72
+ *         return RtnDouble(env, position)
+ *     elif data.type == INTEGER:
+ *         return RtnLong(env, position)             # <<<<<<<<<<<<<<
+ *     elif data.type in [SYMBOL, STRING]:
+ *         return RtnLexeme(env, position)
+ */
+    __Pyx_XDECREF(__pyx_r);
+    __pyx_t_2 = __Pyx_PyInt_From_long(RtnLong(__pyx_v_env, __pyx_v_position)); if (unlikely(!__pyx_t_2)) __PYX_ERR(1, 72, __pyx_L1_error)
+    __Pyx_GOTREF(__pyx_t_2);
+    __pyx_r = __pyx_t_2;
+    __pyx_t_2 = 0;
+    goto __pyx_L0;
+
+    /* "CLPmod.pxd":71
+ *     if data.type == FLOAT:
+ *         return RtnDouble(env, position)
+ *     elif data.type == INTEGER:             # <<<<<<<<<<<<<<
+ *         return RtnLong(env, position)
+ *     elif data.type in [SYMBOL, STRING]:
+ */
+  }
+
+  /* "CLPmod.pxd":73
+ *     elif data.type == INTEGER:
+ *         return RtnLong(env, position)
+ *     elif data.type in [SYMBOL, STRING]:             # <<<<<<<<<<<<<<
+ *         return RtnLexeme(env, position)
+ *     elif data.type == EXTERNAL_ADDRESS:
+ */
+  __pyx_t_3 = __pyx_v_data.type;
+  __pyx_t_4 = ((__pyx_t_3 == SYMBOL) != 0);
+  if (!__pyx_t_4) {
+  } else {
+    __pyx_t_1 = __pyx_t_4;
+    goto __pyx_L5_bool_binop_done;
+  }
+  __pyx_t_4 = ((__pyx_t_3 == STRING) != 0);
+  __pyx_t_1 = __pyx_t_4;
+  __pyx_L5_bool_binop_done:;
+  __pyx_t_4 = (__pyx_t_1 != 0);
+  if (__pyx_t_4) {
+
+    /* "CLPmod.pxd":74
+ *         return RtnLong(env, position)
+ *     elif data.type in [SYMBOL, STRING]:
+ *         return RtnLexeme(env, position)             # <<<<<<<<<<<<<<
+ *     elif data.type == EXTERNAL_ADDRESS:
+ *         return <object>data.value
+ */
+    __Pyx_XDECREF(__pyx_r);
+    __pyx_t_2 = __Pyx_PyBytes_FromString(RtnLexeme(__pyx_v_env, __pyx_v_position)); if (unlikely(!__pyx_t_2)) __PYX_ERR(1, 74, __pyx_L1_error)
+    __Pyx_GOTREF(__pyx_t_2);
+    __pyx_r = __pyx_t_2;
+    __pyx_t_2 = 0;
+    goto __pyx_L0;
+
+    /* "CLPmod.pxd":73
+ *     elif data.type == INTEGER:
+ *         return RtnLong(env, position)
+ *     elif data.type in [SYMBOL, STRING]:             # <<<<<<<<<<<<<<
+ *         return RtnLexeme(env, position)
+ *     elif data.type == EXTERNAL_ADDRESS:
+ */
+  }
+
+  /* "CLPmod.pxd":75
+ *     elif data.type in [SYMBOL, STRING]:
+ *         return RtnLexeme(env, position)
+ *     elif data.type == EXTERNAL_ADDRESS:             # <<<<<<<<<<<<<<
+ *         return <object>data.value
+ *     elif data.type == MULTIFIELD:
+ */
+  __pyx_t_4 = ((__pyx_v_data.type == EXTERNAL_ADDRESS) != 0);
+  if (__pyx_t_4) {
+
+    /* "CLPmod.pxd":76
+ *         return RtnLexeme(env, position)
+ *     elif data.type == EXTERNAL_ADDRESS:
+ *         return <object>data.value             # <<<<<<<<<<<<<<
+ *     elif data.type == MULTIFIELD:
+ *         res = []
+ */
+    __Pyx_XDECREF(__pyx_r);
+    __Pyx_INCREF(((PyObject *)__pyx_v_data.value));
+    __pyx_r = ((PyObject *)__pyx_v_data.value);
+    goto __pyx_L0;
+
+    /* "CLPmod.pxd":75
+ *     elif data.type in [SYMBOL, STRING]:
+ *         return RtnLexeme(env, position)
+ *     elif data.type == EXTERNAL_ADDRESS:             # <<<<<<<<<<<<<<
+ *         return <object>data.value
+ *     elif data.type == MULTIFIELD:
+ */
+  }
+
+  /* "CLPmod.pxd":77
+ *     elif data.type == EXTERNAL_ADDRESS:
+ *         return <object>data.value
+ *     elif data.type == MULTIFIELD:             # <<<<<<<<<<<<<<
+ *         res = []
+ *         for v in range(1, GetDOLength( < DATA_OBJECT > data) + 1):
+ */
+  __pyx_t_4 = ((__pyx_v_data.type == MULTIFIELD) != 0);
+  if (__pyx_t_4) {
+
+    /* "CLPmod.pxd":78
+ *         return <object>data.value
+ *     elif data.type == MULTIFIELD:
+ *         res = []             # <<<<<<<<<<<<<<
+ *         for v in range(1, GetDOLength( < DATA_OBJECT > data) + 1):
+ *             _t = GetMFType( <void *> data.value, v)
+ */
+    __pyx_t_2 = PyList_New(0); if (unlikely(!__pyx_t_2)) __PYX_ERR(1, 78, __pyx_L1_error)
+    __Pyx_GOTREF(__pyx_t_2);
+    __pyx_v_res = ((PyObject*)__pyx_t_2);
+    __pyx_t_2 = 0;
+
+    /* "CLPmod.pxd":79
+ *     elif data.type == MULTIFIELD:
+ *         res = []
+ *         for v in range(1, GetDOLength( < DATA_OBJECT > data) + 1):             # <<<<<<<<<<<<<<
+ *             _t = GetMFType( <void *> data.value, v)
+ *             if _t == FLOAT:
+ */
+    __pyx_t_5 = (GetDOLength(((DATA_OBJECT)__pyx_v_data)) + 1);
+    for (__pyx_t_6 = 1; __pyx_t_6 < __pyx_t_5; __pyx_t_6+=1) {
+      __pyx_v_v = __pyx_t_6;
+
+      /* "CLPmod.pxd":80
+ *         res = []
+ *         for v in range(1, GetDOLength( < DATA_OBJECT > data) + 1):
+ *             _t = GetMFType( <void *> data.value, v)             # <<<<<<<<<<<<<<
+ *             if _t == FLOAT:
+ *                 res.append(ValueToDouble( < void * > GetMFValue( < void * > data.value, v)))
+ */
+      __pyx_v__t = GetMFType(((void *)__pyx_v_data.value), __pyx_v_v);
+
+      /* "CLPmod.pxd":81
+ *         for v in range(1, GetDOLength( < DATA_OBJECT > data) + 1):
+ *             _t = GetMFType( <void *> data.value, v)
+ *             if _t == FLOAT:             # <<<<<<<<<<<<<<
+ *                 res.append(ValueToDouble( < void * > GetMFValue( < void * > data.value, v)))
+ *             elif _t == INTEGER:
+ */
+      __pyx_t_4 = ((__pyx_v__t == FLOAT) != 0);
+      if (__pyx_t_4) {
+
+        /* "CLPmod.pxd":82
+ *             _t = GetMFType( <void *> data.value, v)
+ *             if _t == FLOAT:
+ *                 res.append(ValueToDouble( < void * > GetMFValue( < void * > data.value, v)))             # <<<<<<<<<<<<<<
+ *             elif _t == INTEGER:
+ *                 res.append(ValueToLong( < void * > GetMFValue( < void * > data.value, v)))
+ */
+        __pyx_t_2 = PyFloat_FromDouble(ValueToDouble(((void *)GetMFValue(((void *)__pyx_v_data.value), __pyx_v_v)))); if (unlikely(!__pyx_t_2)) __PYX_ERR(1, 82, __pyx_L1_error)
+        __Pyx_GOTREF(__pyx_t_2);
+        __pyx_t_7 = __Pyx_PyList_Append(__pyx_v_res, __pyx_t_2); if (unlikely(__pyx_t_7 == -1)) __PYX_ERR(1, 82, __pyx_L1_error)
+        __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
+
+        /* "CLPmod.pxd":81
+ *         for v in range(1, GetDOLength( < DATA_OBJECT > data) + 1):
+ *             _t = GetMFType( <void *> data.value, v)
+ *             if _t == FLOAT:             # <<<<<<<<<<<<<<
+ *                 res.append(ValueToDouble( < void * > GetMFValue( < void * > data.value, v)))
+ *             elif _t == INTEGER:
+ */
+        goto __pyx_L9;
+      }
+
+      /* "CLPmod.pxd":83
+ *             if _t == FLOAT:
+ *                 res.append(ValueToDouble( < void * > GetMFValue( < void * > data.value, v)))
+ *             elif _t == INTEGER:             # <<<<<<<<<<<<<<
+ *                 res.append(ValueToLong( < void * > GetMFValue( < void * > data.value, v)))
+ *             elif _t in [SYMBOL, STRING]:
+ */
+      __pyx_t_4 = ((__pyx_v__t == INTEGER) != 0);
+      if (__pyx_t_4) {
+
+        /* "CLPmod.pxd":84
+ *                 res.append(ValueToDouble( < void * > GetMFValue( < void * > data.value, v)))
+ *             elif _t == INTEGER:
+ *                 res.append(ValueToLong( < void * > GetMFValue( < void * > data.value, v)))             # <<<<<<<<<<<<<<
+ *             elif _t in [SYMBOL, STRING]:
+ *                 res.append(ValueToString( < void * > GetMFValue( < void * > data.value, v)))
+ */
+        __pyx_t_2 = __Pyx_PyInt_From_long(ValueToLong(((void *)GetMFValue(((void *)__pyx_v_data.value), __pyx_v_v)))); if (unlikely(!__pyx_t_2)) __PYX_ERR(1, 84, __pyx_L1_error)
+        __Pyx_GOTREF(__pyx_t_2);
+        __pyx_t_7 = __Pyx_PyList_Append(__pyx_v_res, __pyx_t_2); if (unlikely(__pyx_t_7 == -1)) __PYX_ERR(1, 84, __pyx_L1_error)
+        __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
+
+        /* "CLPmod.pxd":83
+ *             if _t == FLOAT:
+ *                 res.append(ValueToDouble( < void * > GetMFValue( < void * > data.value, v)))
+ *             elif _t == INTEGER:             # <<<<<<<<<<<<<<
+ *                 res.append(ValueToLong( < void * > GetMFValue( < void * > data.value, v)))
+ *             elif _t in [SYMBOL, STRING]:
+ */
+        goto __pyx_L9;
+      }
+
+      /* "CLPmod.pxd":85
+ *             elif _t == INTEGER:
+ *                 res.append(ValueToLong( < void * > GetMFValue( < void * > data.value, v)))
+ *             elif _t in [SYMBOL, STRING]:             # <<<<<<<<<<<<<<
+ *                 res.append(ValueToString( < void * > GetMFValue( < void * > data.value, v)))
+ *             elif _t == EXTERNAL_ADDRESS:
+ */
+      __pyx_t_8 = __pyx_v__t;
+      __pyx_t_1 = ((__pyx_t_8 == SYMBOL) != 0);
+      if (!__pyx_t_1) {
+      } else {
+        __pyx_t_4 = __pyx_t_1;
+        goto __pyx_L10_bool_binop_done;
+      }
+      __pyx_t_1 = ((__pyx_t_8 == STRING) != 0);
+      __pyx_t_4 = __pyx_t_1;
+      __pyx_L10_bool_binop_done:;
+      __pyx_t_1 = (__pyx_t_4 != 0);
+      if (__pyx_t_1) {
+
+        /* "CLPmod.pxd":86
+ *                 res.append(ValueToLong( < void * > GetMFValue( < void * > data.value, v)))
+ *             elif _t in [SYMBOL, STRING]:
+ *                 res.append(ValueToString( < void * > GetMFValue( < void * > data.value, v)))             # <<<<<<<<<<<<<<
+ *             elif _t == EXTERNAL_ADDRESS:
+ *                 res.append(<object>GetMFValue(<void*>data.value, v))
+ */
+        __pyx_t_2 = __Pyx_PyBytes_FromString(ValueToString(((void *)GetMFValue(((void *)__pyx_v_data.value), __pyx_v_v)))); if (unlikely(!__pyx_t_2)) __PYX_ERR(1, 86, __pyx_L1_error)
+        __Pyx_GOTREF(__pyx_t_2);
+        __pyx_t_7 = __Pyx_PyList_Append(__pyx_v_res, __pyx_t_2); if (unlikely(__pyx_t_7 == -1)) __PYX_ERR(1, 86, __pyx_L1_error)
+        __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
+
+        /* "CLPmod.pxd":85
+ *             elif _t == INTEGER:
+ *                 res.append(ValueToLong( < void * > GetMFValue( < void * > data.value, v)))
+ *             elif _t in [SYMBOL, STRING]:             # <<<<<<<<<<<<<<
+ *                 res.append(ValueToString( < void * > GetMFValue( < void * > data.value, v)))
+ *             elif _t == EXTERNAL_ADDRESS:
+ */
+        goto __pyx_L9;
+      }
+
+      /* "CLPmod.pxd":87
+ *             elif _t in [SYMBOL, STRING]:
+ *                 res.append(ValueToString( < void * > GetMFValue( < void * > data.value, v)))
+ *             elif _t == EXTERNAL_ADDRESS:             # <<<<<<<<<<<<<<
+ *                 res.append(<object>GetMFValue(<void*>data.value, v))
+ *             else:
+ */
+      __pyx_t_1 = ((__pyx_v__t == EXTERNAL_ADDRESS) != 0);
+      if (__pyx_t_1) {
+
+        /* "CLPmod.pxd":88
+ *                 res.append(ValueToString( < void * > GetMFValue( < void * > data.value, v)))
+ *             elif _t == EXTERNAL_ADDRESS:
+ *                 res.append(<object>GetMFValue(<void*>data.value, v))             # <<<<<<<<<<<<<<
+ *             else:
+ *                 res.append(None)
+ */
+        __pyx_t_9 = GetMFValue(((void *)__pyx_v_data.value), __pyx_v_v);
+        __pyx_t_7 = __Pyx_PyList_Append(__pyx_v_res, ((PyObject *)__pyx_t_9)); if (unlikely(__pyx_t_7 == -1)) __PYX_ERR(1, 88, __pyx_L1_error)
+
+        /* "CLPmod.pxd":87
+ *             elif _t in [SYMBOL, STRING]:
+ *                 res.append(ValueToString( < void * > GetMFValue( < void * > data.value, v)))
+ *             elif _t == EXTERNAL_ADDRESS:             # <<<<<<<<<<<<<<
+ *                 res.append(<object>GetMFValue(<void*>data.value, v))
+ *             else:
+ */
+        goto __pyx_L9;
+      }
+
+      /* "CLPmod.pxd":90
+ *                 res.append(<object>GetMFValue(<void*>data.value, v))
+ *             else:
+ *                 res.append(None)             # <<<<<<<<<<<<<<
+ *         return res
+ *     else:
+ */
+      /*else*/ {
+        __pyx_t_7 = __Pyx_PyList_Append(__pyx_v_res, Py_None); if (unlikely(__pyx_t_7 == -1)) __PYX_ERR(1, 90, __pyx_L1_error)
+      }
+      __pyx_L9:;
+    }
+
+    /* "CLPmod.pxd":91
+ *             else:
+ *                 res.append(None)
+ *         return res             # <<<<<<<<<<<<<<
+ *     else:
+ *         return None
+ */
+    __Pyx_XDECREF(__pyx_r);
+    __Pyx_INCREF(__pyx_v_res);
+    __pyx_r = __pyx_v_res;
+    goto __pyx_L0;
+
+    /* "CLPmod.pxd":77
+ *     elif data.type == EXTERNAL_ADDRESS:
+ *         return <object>data.value
+ *     elif data.type == MULTIFIELD:             # <<<<<<<<<<<<<<
+ *         res = []
+ *         for v in range(1, GetDOLength( < DATA_OBJECT > data) + 1):
+ */
+  }
+
+  /* "CLPmod.pxd":93
+ *         return res
+ *     else:
+ *         return None             # <<<<<<<<<<<<<<
+ */
+  /*else*/ {
+    __Pyx_XDECREF(__pyx_r);
+    __Pyx_INCREF(Py_None);
+    __pyx_r = Py_None;
+    goto __pyx_L0;
+  }
+
+  /* "CLPmod.pxd":63
+ *     return None
+ * 
+ * cdef inline getArgument(void* env, char* function, int position):             # <<<<<<<<<<<<<<
+ *     cdef DATA_OBJECT data
+ * 
+ */
+
+  /* function exit code */
+  __pyx_L1_error:;
+  __Pyx_XDECREF(__pyx_t_2);
+  __Pyx_AddTraceback("CLPmod.getArgument", __pyx_clineno, __pyx_lineno, __pyx_filename);
+  __pyx_r = 0;
+  __pyx_L0:;
+  __Pyx_XDECREF(__pyx_v_res);
+  __Pyx_XGIVEREF(__pyx_r);
   __Pyx_RefNannyFinishContext();
   return __pyx_r;
 }
@@ -1529,6 +2299,7 @@ static __Pyx_StringTabEntry __pyx_string_tab[] = {
   {&__pyx_n_s_prepare, __pyx_k_prepare, sizeof(__pyx_k_prepare), 0, 0, 1, 1},
   {&__pyx_n_s_print, __pyx_k_print, sizeof(__pyx_k_print), 0, 0, 1, 1},
   {&__pyx_n_s_qualname, __pyx_k_qualname, sizeof(__pyx_k_qualname), 0, 0, 1, 1},
+  {&__pyx_n_s_range, __pyx_k_range, sizeof(__pyx_k_range), 0, 0, 1, 1},
   {&__pyx_n_s_self, __pyx_k_self, sizeof(__pyx_k_self), 0, 0, 1, 1},
   {&__pyx_n_s_test, __pyx_k_test, sizeof(__pyx_k_test), 0, 0, 1, 1},
   {&__pyx_n_s_testmod, __pyx_k_testmod, sizeof(__pyx_k_testmod), 0, 0, 1, 1},
@@ -1536,7 +2307,10 @@ static __Pyx_StringTabEntry __pyx_string_tab[] = {
   {0, 0, 0, 0, 0, 0, 0}
 };
 static int __Pyx_InitCachedBuiltins(void) {
+  __pyx_builtin_range = __Pyx_GetBuiltinName(__pyx_n_s_range); if (!__pyx_builtin_range) __PYX_ERR(0, 47, __pyx_L1_error)
   return 0;
+  __pyx_L1_error:;
+  return -1;
 }
 
 static int __Pyx_InitCachedConstants(void) {
@@ -1730,6 +2504,14 @@ PyMODINIT_FUNC PyInit_testmod(void)
   if (PyDict_SetItem(__pyx_d, __pyx_n_s_test, __pyx_t_1) < 0) __PYX_ERR(0, 1, __pyx_L1_error)
   __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
 
+  /* "CLPmod.pxd":63
+ *     return None
+ * 
+ * cdef inline getArgument(void* env, char* function, int position):             # <<<<<<<<<<<<<<
+ *     cdef DATA_OBJECT data
+ * 
+ */
+
   /*--- Wrapped vars code ---*/
 
   goto __pyx_L0;
@@ -1770,6 +2552,20 @@ end:
     return (__Pyx_RefNannyAPIStruct *)r;
 }
 #endif
+
+/* GetBuiltinName */
+static PyObject *__Pyx_GetBuiltinName(PyObject *name) {
+    PyObject* result = __Pyx_PyObject_GetAttrStr(__pyx_b, name);
+    if (unlikely(!result)) {
+        PyErr_Format(PyExc_NameError,
+#if PY_MAJOR_VERSION >= 3
+            "name '%U' is not defined", name);
+#else
+            "name '%.200s' is not defined", PyString_AS_STRING(name));
+#endif
+    }
+    return result;
+}
 
 /* Import */
 static PyObject *__Pyx_Import(PyObject *name, PyObject *from_list, int level) {
@@ -2000,20 +2796,6 @@ static CYTHON_INLINE void __Pyx_ErrFetchInState(PyThreadState *tstate, PyObject 
     if (nogil)
         PyGILState_Release(state);
 #endif
-}
-
-/* GetBuiltinName */
-    static PyObject *__Pyx_GetBuiltinName(PyObject *name) {
-    PyObject* result = __Pyx_PyObject_GetAttrStr(__pyx_b, name);
-    if (unlikely(!result)) {
-        PyErr_Format(PyExc_NameError,
-#if PY_MAJOR_VERSION >= 3
-            "name '%U' is not defined", name);
-#else
-            "name '%.200s' is not defined", PyString_AS_STRING(name));
-#endif
-    }
-    return result;
 }
 
 /* GetModuleGlobalName */
@@ -3067,6 +3849,28 @@ bad:
     }
 }
 
+/* CIntFromPyVerify */
+          #define __PYX_VERIFY_RETURN_INT(target_type, func_type, func_value)\
+    __PYX__VERIFY_RETURN_INT(target_type, func_type, func_value, 0)
+#define __PYX_VERIFY_RETURN_INT_EXC(target_type, func_type, func_value)\
+    __PYX__VERIFY_RETURN_INT(target_type, func_type, func_value, 1)
+#define __PYX__VERIFY_RETURN_INT(target_type, func_type, func_value, exc)\
+    {\
+        func_type value = func_value;\
+        if (sizeof(target_type) < sizeof(func_type)) {\
+            if (unlikely(value != (func_type) (target_type) value)) {\
+                func_type zero = 0;\
+                if (exc && unlikely(value == (func_type)-1 && PyErr_Occurred()))\
+                    return (target_type) -1;\
+                if (is_unsigned && unlikely(value < zero))\
+                    goto raise_neg_overflow;\
+                else\
+                    goto raise_overflow;\
+            }\
+        }\
+        return (target_type) value;\
+    }
+
 /* PrintOne */
           #if !CYTHON_COMPILING_IN_PYPY && PY_MAJOR_VERSION < 3
 static int __Pyx_PrintOne(PyObject* f, PyObject *o) {
@@ -3103,28 +3907,6 @@ static int __Pyx_PrintOne(PyObject* stream, PyObject *o) {
     return res;
 }
 #endif
-
-/* CIntFromPyVerify */
-          #define __PYX_VERIFY_RETURN_INT(target_type, func_type, func_value)\
-    __PYX__VERIFY_RETURN_INT(target_type, func_type, func_value, 0)
-#define __PYX_VERIFY_RETURN_INT_EXC(target_type, func_type, func_value)\
-    __PYX__VERIFY_RETURN_INT(target_type, func_type, func_value, 1)
-#define __PYX__VERIFY_RETURN_INT(target_type, func_type, func_value, exc)\
-    {\
-        func_type value = func_value;\
-        if (sizeof(target_type) < sizeof(func_type)) {\
-            if (unlikely(value != (func_type) (target_type) value)) {\
-                func_type zero = 0;\
-                if (exc && unlikely(value == (func_type)-1 && PyErr_Occurred()))\
-                    return (target_type) -1;\
-                if (is_unsigned && unlikely(value < zero))\
-                    goto raise_neg_overflow;\
-                else\
-                    goto raise_overflow;\
-            }\
-        }\
-        return (target_type) value;\
-    }
 
 /* CIntFromPy */
           static CYTHON_INLINE long __Pyx_PyInt_As_long(PyObject *x) {

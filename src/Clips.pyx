@@ -130,6 +130,7 @@ cdef extern from "clips.h":
     ## Debug functions
     int   Watch(void* env, char* item)
     int   Unwatch(void* env, char* item)
+    long  MemUsed(void* env)
 
 
 
@@ -491,6 +492,8 @@ cdef class ENV(BASEENV):
             return Unwatch( < void * > self.env, name)
     def deactivateROUTER(self, name):
         return DeactivateRouter(<void*>self.env, name)
+    def USAGE(self):
+        return MemUsed(<void*>self.env)
     def __dealloc__(self):
         if self.ready == True:
             DestroyEnvironment(self.env)

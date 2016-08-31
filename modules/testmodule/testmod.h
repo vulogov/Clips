@@ -22,6 +22,8 @@ __PYX_EXTERN_C DL_IMPORT(double) get_clock(void *);
 __PYX_EXTERN_C DL_IMPORT(double) get_number_of_params(void *);
 __PYX_EXTERN_C DL_IMPORT(PyObject) *make_class(void *);
 __PYX_EXTERN_C DL_IMPORT(PyObject) *call_a(void *);
+__PYX_EXTERN_C DL_IMPORT(PyObject) *call_b(void *);
+__PYX_EXTERN_C DL_IMPORT(PyObject) *print_params(void *);
 __PYX_EXTERN_C DL_IMPORT(int) init_clips_testmod(void *);
 
 #endif /* !__PYX_HAVE_API__testmod */
